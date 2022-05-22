@@ -72,7 +72,7 @@ def main():
     print(' '.join('%5s' % categories_dict[test_label[j].item()] for j in range(4)))
     imshow(utils.make_grid(test_image))
 
-    net = AlexNet(num_classes=5, init_weights=True)
+    net = AlexNet(num_classes=2, init_weights=True)
 
     net.to(device)
     loss_function = nn.CrossEntropyLoss()

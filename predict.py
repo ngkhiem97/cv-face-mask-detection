@@ -18,7 +18,7 @@ def main():
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
     # load image
-    img_path = "./face_mask_test.jpg"
+    img_path = "./face_crop.jpg"
     assert os.path.exists(img_path), "file: '{}' dose not exist.".format(img_path)
     img = Image.open(img_path)
 
@@ -36,7 +36,7 @@ def main():
         class_indict = json.load(f)
 
     # create model
-    model = AlexNet(num_classes=5).to(device)
+    model = AlexNet(num_classes=2).to(device)
 
     # load model weights
     weights_path = "./AlexNet.pth"
@@ -53,9 +53,11 @@ def main():
     print_res = "class: {}   prob: {:.3}".format(class_indict[str(predict_cla)],
                                                  predict[predict_cla].numpy())
     plt.title(print_res)
-    # for i in range(len(predict)):
-    #     print("class: {:10}   prob: {:.3}".format(class_indict[str(i)],
-    #                                               predict[i].numpy()))
+    print(predict)
+    print(predict_cla)
+    for i in range(len(predict)):
+        print("class: {:10}   prob: {:.3}".format(class_indict[str(i)],
+                                                  predict[i].numpy()))
     plt.show()
 
 
