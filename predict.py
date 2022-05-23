@@ -41,7 +41,8 @@ def main():
     # load model weights
     weights_path = "./AlexNet.pth"
     assert os.path.exists(weights_path), "file: '{}' dose not exist.".format(weights_path)
-    model.load_state_dict(torch.load(weights_path))
+    map_location = torch.device('cpu') if not torch.cuda.is_available() else None
+    model.load_state_dict(torch.load(weights_path, map_location = map_location))
 
     model.eval()
     with torch.no_grad():
