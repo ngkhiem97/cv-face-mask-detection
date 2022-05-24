@@ -9,6 +9,7 @@ Move the dataset to the **dataset** folder and run **processing.py** to process 
 cd dataset/
 python3 processing.py
 ```
+This processing step will extract facial features from the dataset. See example below:
 
 ## Training
 To train the model, run the **train.py** file as below:
