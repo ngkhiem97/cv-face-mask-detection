@@ -6,7 +6,7 @@ from PIL import Image
 from torchvision import transforms
 import matplotlib.pyplot as plt
 
-from model import AlexNet
+from models.alexnet import AlexNet 
 
 
 def main():
@@ -18,7 +18,7 @@ def main():
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
     # load image
-    img_path = "./face_crop.jpg"
+    img_path = "./images/face_crop.jpg"
     assert os.path.exists(img_path), "file: '{}' dose not exist.".format(img_path)
     img = Image.open(img_path)
 
@@ -39,7 +39,7 @@ def main():
     model = AlexNet(num_classes=2).to(device)
 
     # load model weights
-    weights_path = "./AlexNet.pth"
+    weights_path = "./models/AlexNet.pth"
     assert os.path.exists(weights_path), "file: '{}' dose not exist.".format(weights_path)
     map_location = torch.device('cpu') if not torch.cuda.is_available() else None
     model.load_state_dict(torch.load(weights_path, map_location = map_location))
