@@ -1,3 +1,3 @@
-data_set/train/
-data_set/val/
-data_set/FaceMaskDataset/
+dataset/train/
+dataset/val/
+dataset/FaceMaskDataset/
