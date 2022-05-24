@@ -24,7 +24,7 @@ def main():
     data_transform = transforms.Compose([transforms.Resize((224, 224)),
                                         transforms.ToTensor(),
                                         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-    json_path = './categories_indices.json'
+    json_path = './categories.json'
     assert os.path.exists(json_path), "file: '{}' dose not exist.".format(json_path)
     with open(json_path, "r") as f:
         class_indict = json.load(f)

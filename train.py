@@ -43,7 +43,7 @@ def main():
 
     # write dict into json file
     json_str = json.dumps(categories_dict, indent=4)
-    with open('categories_indices.json', 'w') as json_file:
+    with open('categories.json', 'w') as json_file:
         json_file.write(json_str)
 
     batch_size = 32

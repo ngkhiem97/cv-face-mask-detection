@@ -1,3 +1,4 @@
-./data_set/FaceMaskDataset/
 ./data_set/train/
 ./data_set/val/
+./data_set/FaceMaskDataset/train/
+./data_set/FaceMaskDataset/val/
