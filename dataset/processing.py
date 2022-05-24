@@ -55,8 +55,10 @@ def main():
     # get training and validation set path
     train_path = os.path.join(data_set_path, "train")
     val_path = os.path.join(data_set_path, "val")
-    assert os.path.exists(train_path), "{} path does not exist.".format(train_path)
-    assert os.path.exists(val_path), "{} path does not exist.".format(val_path)
+    if not os.path.exists(train_path):
+    	os.mkdir(train_path)
+    if not os.path.exists(val_path):
+    	os.mkdir(val_path)
 
     # create classifier path for training
     mk_file(os.path.join(train_path, "face"))
