@@ -17,5 +17,5 @@ python3 train.py
 ```
 
 ## Execution
-1. face_mask_detect.py: to run the Face Mask Dectection module.
-2. predict.py: to predict an individual image.
+1. **face_mask_detect.py**: to run the Face Mask Dectection module.
+2. **predict.py**: to predict an individual image.
