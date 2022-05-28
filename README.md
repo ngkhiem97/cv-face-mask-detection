@@ -1,6 +1,11 @@
 # cv-face-mask-detection
 *Please do not move the files*
 
+## Contributors
+
+- Tien Nguyen: MS Data Science at Drexel University
+- Khiem Nguyen: MS Data Science at Drexel University
+
 ## Dataset
 Download the dataset at https://drive.google.com/file/d/1QspxOJMDf_rAWVV7AU_Nc0rjo1_EPEDW/view 
 
