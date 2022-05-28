@@ -27,7 +27,7 @@ def main():
                                    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])}
 
     data_root = os.getcwd()
-    image_path = os.path.join(data_root, "data_set")
+    image_path = os.path.join(data_root, "dataset")
     assert os.path.exists(image_path), "{} path does not exist.".format(image_path)
     train_dataset = datasets.ImageFolder(root=os.path.join(image_path, "train"),
                                          transform=data_transform["train"])
