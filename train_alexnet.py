@@ -74,12 +74,19 @@ def train(model, device, train_loader, validate_loader, optimizer_type, lr, epoc
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(
         time_elapsed // 60, time_elapsed % 60))
+
     
-    with open('./log/training_AlexNet_'+optimizer_type+'_'+str(lr).replace(".", "-")+'.txt', 'w') as f:
-        f.write('Training complete in {:.0f}m {:.0f}s\n'.format(time_elapsed // 60, time_elapsed % 60))
-        f.write(f'Best val_accuracy: {best_acc}\n')
-        f.write(f'Training loss: {training_loss}\n')
-        f.write(f'Validation accuracy: {val_accuracy}\n')
+    model_name = 'AlexNet_'+optimizer_type+'_'+str(lr).replace(".", "-")
+    model_dict ={model_name:{'training time': time_elapsed, 'best accuracy': best_acc, 'training loss': training_loss, 'evaluation accuracy': val_accuracy}}
+    json_str = json.dumps(model_dict, indent=4)
+    with open('./log/training_'+model_name+'.json', 'w') as json_file:
+        json_file.write(json_str)
+    
+    # with open('./log/training_AlexNet_'+optimizer_type+'_'+str(lr).replace(".", "-")+'.txt', 'w') as f:
+    #     f.write('Training complete in {:.0f}m {:.0f}s\n'.format(time_elapsed // 60, time_elapsed % 60))
+    #     f.write(f'Best val_accuracy: {best_acc}\n')
+    #     f.write(f'Training loss: {training_loss}\n')
+    #     f.write(f'Validation accuracy: {val_accuracy}\n')
 
 
 def main():
