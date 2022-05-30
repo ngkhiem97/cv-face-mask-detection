@@ -1,5 +1,5 @@
 dataset/train/
 dataset/val/
 dataset/FaceMaskDataset/
-model/**.pth
-!model/AlexNet.pth
+models/**.pth
+!models/AlexNet.pth
