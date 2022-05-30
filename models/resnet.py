@@ -41,7 +41,7 @@ class ResNet(nn.Module):
 
         self.classifier = nn.Sequential(
             nn.Dropout(p=0.5),
-            nn.Linear(512 * 6 * 6, 2048),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(inplace=True),
             nn.Dropout(p=0.5),
             nn.Linear(2048, 2048),
