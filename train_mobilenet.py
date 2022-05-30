@@ -76,7 +76,7 @@ def train(model, device, train_loader, validate_loader, optimizer_type, lr, epoc
         time_elapsed // 60, time_elapsed % 60))
 
     model_name = 'MobileNet_'+optimizer_type+'_'+str(lr).replace(".", "-")
-    model_dict ={model_name:{'training time': time_elapsed, 'best accuracy': best_acc, 'training loss': training_loss, 'evaluation accuracy': val_accuracy}}
+    model_dict ={model_name:{'training time': time_elapsed, 'best accuracy': best_acc, 'training loss': training_loss, 'validation accuracy': val_accuracy}}
     json_str = json.dumps(model_dict, indent=4)
     with open('./log/training_+' + model_name+'.json', 'w') as json_file:
         json_file.write(json_str)
