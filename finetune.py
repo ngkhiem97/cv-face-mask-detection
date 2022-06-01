@@ -154,7 +154,7 @@ def main():
         learning = json.load(f)
     for learning_item in learning:
         for lr in learning[learning_item]["lr"]:
-            train(net, device, train_loader, validate_loader, learning_item, lr, 10)
+            train(net, device, train_loader, validate_loader, learning_item, lr, 20)
 
     # net.to(device)
     # loss_function = nn.CrossEntropyLoss()
