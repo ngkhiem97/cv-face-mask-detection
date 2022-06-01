@@ -1,4 +1,5 @@
 import os
+from sched import scheduler
 import sys
 import json
 
@@ -13,6 +14,13 @@ from tqdm import tqdm
 from models.alexnet import AlexNet
 import time
 
+def set_learning_rate(optimizer, epoch, base_lr):
+    # This function is inspired by assigment 2
+    lr = base_lr*0.3**(epoch//3)
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
+    
+
 def train(model, device, train_loader, validate_loader, optimizer_type, lr, epochs):
     print(f"Training start with {optimizer_type} and lr={lr}")
     model.to(device)
@@ -24,16 +32,21 @@ def train(model, device, train_loader, validate_loader, optimizer_type, lr, epoc
         optimizer = optim.Adam(model.parameters(), lr=lr)
     else:
         raise ValueError("optimizer_type should be 'SGD' or 'Adam'")
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
 
     since = time.time()
     save_path = './models/AlexNet_'+optimizer_type+'_'+str(lr).replace(".", "-")+'.pth'
     best_acc = 0.0
     train_steps = len(train_loader)
+    # eval_steps = len(validate_loader)
     training_loss = []
+    # validation_loss = []
     val_accuracy = []
     for epoch in range(epochs):
+        set_learning_rate(optimizer, epoch, lr)
         model.train()
         running_loss = 0.0
+        eval_running_loss = 0.0
         train_bar = tqdm(train_loader, file=sys.stdout)
         for step, data in enumerate(train_bar):
             images, labels = data
@@ -57,19 +70,25 @@ def train(model, device, train_loader, validate_loader, optimizer_type, lr, epoc
             for val_data in val_bar:
                 val_images, val_labels = val_data
                 outputs = model(val_images.to(device))
+                # eval_loss = loss_function(outputs, val_labels.to(device))
+                # optimizer.step()
+                # eval_running_loss += eval_loss.item()
                 predict_y = torch.max(outputs, dim=1)[1]
                 acc += torch.eq(predict_y, val_labels.to(device)).sum().item()
-
+        
+        # val_loss = eval_running_loss/eval_steps
         val_accurate = acc / validate_loader.dataset.__len__()
         print('[epoch %d] train_loss: %.3f  val_accuracy: %.3f' %
               (epoch + 1, running_loss / train_steps, val_accurate))
         training_loss.append(running_loss / train_steps)
+        # validation_loss.append(val_loss)
         val_accuracy.append(val_accurate)
 
         if val_accurate > best_acc:
             best_acc = val_accurate
             torch.save(model.state_dict(), save_path)
-
+        # scheduler.step(val_loss)
+        
     print(f'Finished training for {optimizer_type} and lr={lr}')
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(
@@ -148,7 +167,7 @@ def main():
         learning = json.load(f)
     for learning_item in learning:
         for lr in learning[learning_item]["lr"]:
-            train(net, device, train_loader, validate_loader, learning_item, lr, 10)
+            train(net, device, train_loader, validate_loader, learning_item, lr, 20)
 
     # net.to(device)
     # loss_function = nn.CrossEntropyLoss()
