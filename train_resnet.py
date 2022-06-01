@@ -18,7 +18,6 @@ def set_learning_rate(optimizer, epoch, base_lr):
     lr = base_lr*0.3**(epoch//3)
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
-        
 
 def train(model, device, train_loader, validate_loader, optimizer_type, lr, epochs):
     print(f"Training start with {optimizer_type} and lr={lr}")
