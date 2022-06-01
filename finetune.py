@@ -15,6 +15,13 @@ import time
 
 from torchvision import models
 
+def set_learning_rate(optimizer, epoch, base_lr):
+    # This function is inspired by assigment 2
+    lr = base_lr*0.3**(epoch//3)
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
+    
+
 def train(model, device, train_loader, validate_loader, optimizer_type, lr, epochs):
     print(f"Training start with {optimizer_type} and lr={lr}")
     model.to(device)
@@ -34,6 +41,7 @@ def train(model, device, train_loader, validate_loader, optimizer_type, lr, epoc
     training_loss = []
     val_accuracy = []
     for epoch in range(epochs):
+        set_learning_rate(optimizer, epoch, lr)
         model.train()
         running_loss = 0.0
         train_bar = tqdm(train_loader, file=sys.stdout)
@@ -154,7 +162,7 @@ def main():
         learning = json.load(f)
     for learning_item in learning:
         for lr in learning[learning_item]["lr"]:
-            train(net, device, train_loader, validate_loader, learning_item, lr, 10)
+            train(net, device, train_loader, validate_loader, learning_item, lr, 20)
 
     # net.to(device)
     # loss_function = nn.CrossEntropyLoss()
