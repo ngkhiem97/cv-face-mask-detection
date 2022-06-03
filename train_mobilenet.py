@@ -142,6 +142,7 @@ def main():
                                                                            val_num))
 
     net = MobileNet(num_classes=2, init_weights=True)
+    print(net)
 
     learning_path = './learning.json'
     assert os.path.exists(learning_path), "file: '{}' dose not exist.".format(learning_path)

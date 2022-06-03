@@ -1,25 +1,12 @@
 import torch.nn as nn
 import torch
-
-def _make_divisible(ch, divisor=8, min_ch=None):
+class ConvBatchNormReLU(nn.Sequential):
     """
-    This function is taken from the original tf repo.
-    It ensures that all layers have a channel number that is divisible by 8
-    It can be seen here:
-    https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet/mobilenet.py
+    Combination of Conv2d, BatchNorm2d and ReLU6.
     """
-    if min_ch is None:
-        min_ch = divisor
-    new_ch = max(min_ch, int(ch + divisor / 2) // divisor * divisor)
-    # Make sure that round down does not go down by more than 10%.
-    if new_ch < 0.9 * ch:
-        new_ch += divisor
-    return new_ch
-
-class ConvBNReLU(nn.Sequential):
     def __init__(self, in_channel, out_channel, kernel_size=3, stride=1, groups=1):
         padding = (kernel_size - 1) // 2
-        super(ConvBNReLU, self).__init__(
+        super(ConvBatchNormReLU, self).__init__(
             nn.Conv2d(in_channel, out_channel, kernel_size, stride, padding, groups=groups, bias=False),
             nn.BatchNorm2d(out_channel),
             nn.ReLU6(inplace=True)
@@ -33,31 +20,25 @@ class InvertedResidual(nn.Module):
 
         layers = []
         if expand_ratio != 1:
-            # 1x1 pointwise conv
-            layers.append(ConvBNReLU(in_channel, hidden_channel, kernel_size=1))
+            layers.append(ConvBatchNormReLU(in_channel, hidden_channel, kernel_size=1)) # 1x1 pointwise conv / exand
         layers.extend([
-            # 3x3 depthwise conv
-            ConvBNReLU(hidden_channel, hidden_channel, stride=stride, groups=hidden_channel),
-            # 1x1 pointwise conv(linear)
-            nn.Conv2d(hidden_channel, out_channel, kernel_size=1, bias=False),
+            ConvBatchNormReLU(hidden_channel, hidden_channel, stride=stride, groups=hidden_channel), # 3x3 depthwise conv
+            nn.Conv2d(hidden_channel, out_channel, kernel_size=1, bias=False), # 1x1 pointwise conv(linear)
             nn.BatchNorm2d(out_channel),
         ])
-
         self.conv = nn.Sequential(*layers)
 
     def forward(self, x):
-        if self.use_shortcut:
-            return x + self.conv(x)
-        else:
-            return self.conv(x)
+        return x + self.conv(x) if self.use_shortcut else self.conv(x)
 
 class MobileNet(nn.Module):
-    def __init__(self, num_classes=10, alpha=1.0, round_nearest=8, init_weights=True):
+    def __init__(self, num_classes=2, init_weights=True):
         super(MobileNet, self).__init__()
-        block = InvertedResidual
-        input_channel = _make_divisible(32 * alpha, round_nearest)
-        last_channel = _make_divisible(1280 * alpha, round_nearest)
 
+        # t: expansion ratio
+        # c: output channel
+        # n: repeat times
+        # s: stride
         inverted_residual_setting = [
             # t, c, n, s
             [1, 16, 1, 1],
@@ -68,29 +49,29 @@ class MobileNet(nn.Module):
             [6, 160, 3, 2],
             [6, 320, 1, 1],
         ]
+        input_channel = 32
+        output_channel = 1280
 
         features = []
-        features.append(ConvBNReLU(3, input_channel, stride=2))
+        features.append(ConvBatchNormReLU(3, input_channel, stride=2))
         for t, c, n, s in inverted_residual_setting:
-            output_channel = _make_divisible(c * alpha, round_nearest)
+            output_channel = c
             for i in range(n):
                 stride = s if i == 0 else 1
-                features.append(block(input_channel, output_channel, stride, expand_ratio=t))
+                features.append(InvertedResidual(input_channel, output_channel, stride, expand_ratio=t))
                 input_channel = output_channel
-        features.append(ConvBNReLU(input_channel, last_channel, 1))
+        features.append(ConvBatchNormReLU(input_channel, output_channel, 1))
         self.features = nn.Sequential(*features)
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        
         self.classifier = nn.Sequential(
             nn.Dropout(p=0.5),
-            nn.Linear(last_channel, 2048),
+            nn.Linear(output_channel, 2048),
             nn.ReLU(inplace=True),
             nn.Dropout(p=0.5),
             nn.Linear(2048, 2048),
             nn.ReLU(inplace=True),
             nn.Linear(2048, num_classes),
         )
-
         if init_weights:
             self._initialize_weights()
 
