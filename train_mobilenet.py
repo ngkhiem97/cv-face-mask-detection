@@ -17,14 +17,7 @@ def train(model, device, train_loader, validate_loader, optimizer_type, lr, epoc
     print(f"Training start with {optimizer_type} and lr={lr}")
     model.to(device)
     loss_function = nn.CrossEntropyLoss()
-
-    if optimizer_type == 'SGD':
-        optimizer = optim.SGD(model.parameters(), lr=lr)
-    elif optimizer_type == 'Adam':
-        optimizer = optim.Adam(model.parameters(), lr=lr)
-    else:
-        raise ValueError("optimizer_type should be 'SGD' or 'Adam'")
-
+    optimizer = get_optimizer(model, optimizer_type, lr)
     since = time.time()
     save_path = './models/MobileNet_'+optimizer_type+'_'+str(lr).replace(".", "-")+'.pth'
     best_acc = 0.0

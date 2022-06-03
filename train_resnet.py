@@ -12,6 +12,7 @@ from tqdm import tqdm
 
 from models.resnet import ResNet
 import time
+from utils.training import *
 
 def set_learning_rate(optimizer, epoch, base_lr):
     # This function is inspired by assigment 2
@@ -23,14 +24,7 @@ def train(model, device, train_loader, validate_loader, optimizer_type, lr, epoc
     print(f"Training start with {optimizer_type} and lr={lr}")
     model.to(device)
     loss_function = nn.CrossEntropyLoss()
-
-    if optimizer_type == 'SGD':
-        optimizer = optim.SGD(model.parameters(), lr=lr)
-    elif optimizer_type == 'Adam':
-        optimizer = optim.Adam(model.parameters(), lr=lr)
-    else:
-        raise ValueError("optimizer_type should be 'SGD' or 'Adam'")
-
+    optimizer = get_optimizer(model, optimizer_type, lr)
     since = time.time()
     save_path = './models/ResNet_'+optimizer_type+'_'+str(lr).replace(".", "-")+'.pth'
     best_acc = 0.0
@@ -87,21 +81,11 @@ def train(model, device, train_loader, validate_loader, optimizer_type, lr, epoc
     json_str = json.dumps(model_dict, indent=4)
     with open('./log/training_' + model_name+'.json', 'w') as json_file:
         json_file.write(json_str)
-    
-    
-    # with open('./log/training_ResNet_'+optimizer_type+'_'+str(lr).replace(".", "-")+'.txt', 'w') as f:
-    #     f.write('Training complete in {:.0f}m {:.0f}s\n'.format(time_elapsed // 60, time_elapsed % 60))
-    #     f.write(f'Best val_accuracy: {best_acc}\n')
-    #     f.write(f'Training loss: {training_loss}\n')
-    #     f.write(f'Validation accuracy: {val_accuracy}\n')
-
 
 def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    print("using {} device.".format(device))
-
     torch.cuda.empty_cache()
-
+    print("using {} device.".format(device))
     data_transform = {
         "train": transforms.Compose([transforms.RandomResizedCrop(224),
                                      transforms.RandomHorizontalFlip(),
@@ -110,26 +94,18 @@ def main():
         "val": transforms.Compose([transforms.Resize((224, 224)),
                                    transforms.ToTensor(),
                                    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])}
-
     data_root = os.getcwd()
     image_path = os.path.join(data_root, "dataset")
     assert os.path.exists(image_path), "{} path does not exist.".format(image_path)
     train_dataset = datasets.ImageFolder(root=os.path.join(image_path, "train"),
                                          transform=data_transform["train"])
-    train_num = len(train_dataset)
-
-    # {
-    #     "0": "face",
-    #     "1": "face_mask"
-    # }
     categories_list = train_dataset.class_to_idx
     categories_dict = dict((val, key) for key, val in categories_list.items())
-    print("categories_dict: {}".format(categories_dict))
-
-    # write dict into json file
+    # write categories dictionary into json file
     json_str = json.dumps(categories_dict, indent=4)
     with open('categories.json', 'w') as json_file:
         json_file.write(json_str)
+    print("categories_dict: {}".format(categories_dict))
 
     batch_size = 10
     nw = min([os.cpu_count(), batch_size if batch_size > 1 else 0, 8])  # number of workers
@@ -138,19 +114,14 @@ def main():
     train_loader = torch.utils.data.DataLoader(train_dataset,
                                                batch_size=batch_size, shuffle=True,
                                                num_workers=nw)
-
     validate_dataset = datasets.ImageFolder(root=os.path.join(image_path, "val"),
                                             transform=data_transform["val"])
-    val_num = len(validate_dataset)
     validate_loader = torch.utils.data.DataLoader(validate_dataset,
                                                   batch_size=4, shuffle=False,
                                                   num_workers=nw)
-
-    print("using {} images for training, {} images for validation.".format(train_num,
-                                                                           val_num))
+    print("using {} images for training, {} images for validation.".format(len(train_dataset), len(validate_dataset)))
 
     net = ResNet(num_classes=2, init_weights=True)
-
     learning_path = './learning.json'
     assert os.path.exists(learning_path), "file: '{}' dose not exist.".format(learning_path)
     with open(learning_path, "r") as f:
