@@ -16,25 +16,21 @@ class InvertedResidual(nn.Module):
     def __init__(self, in_channel, out_channel, stride, expand_ratio):
         super(InvertedResidual, self).__init__()
         hidden_channel = in_channel * expand_ratio
-        self.use_shortcut = stride == 1 and in_channel == out_channel
-
+        self.shortcut = stride == 1 and in_channel == out_channel
         layers = []
         if expand_ratio != 1:
             layers.append(ConvBatchNormReLU(in_channel, hidden_channel, kernel_size=1)) # 1x1 pointwise conv / exand
-        layers.extend([
-            ConvBatchNormReLU(hidden_channel, hidden_channel, stride=stride, groups=hidden_channel), # 3x3 depthwise conv
-            nn.Conv2d(hidden_channel, out_channel, kernel_size=1, bias=False), # 1x1 pointwise conv(linear)
-            nn.BatchNorm2d(out_channel),
-        ])
+        layers.append(ConvBatchNormReLU(hidden_channel, hidden_channel, stride=stride, groups=hidden_channel)) # 3x3 depthwise conv
+        layers.append(nn.Conv2d(hidden_channel, out_channel, kernel_size=1, bias=False)) # 1x1 pointwise conv(linear)
+        layers.append(nn.BatchNorm2d(out_channel))
         self.conv = nn.Sequential(*layers)
 
     def forward(self, x):
-        return x + self.conv(x) if self.use_shortcut else self.conv(x)
+        return x + self.conv(x) if self.shortcut else self.conv(x)
 
 class MobileNet(nn.Module):
     def __init__(self, num_classes=2, init_weights=True):
         super(MobileNet, self).__init__()
-
         # t: expansion ratio
         # c: output channel
         # n: repeat times
@@ -51,7 +47,6 @@ class MobileNet(nn.Module):
         ]
         input_channel = 32
         output_channel = 1280
-
         features = []
         features.append(ConvBatchNormReLU(3, input_channel, stride=2))
         for t, c, n, s in inverted_residual_setting:
