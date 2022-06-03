@@ -3,5 +3,3 @@ dataset/val/
 dataset/FaceMaskDataset/
 models/**.pth
 !models/AlexNet.pth
-**/__pycache__/
-**/.ipynb_checkpoints
