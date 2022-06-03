@@ -1,5 +1,4 @@
 # cv-face-mask-detection
-*Please do not move the files*
 
 ## Contributors
 
@@ -26,10 +25,19 @@ This processing step will extract facial features from the dataset. See example 
 ![After extracting](https://raw.githubusercontent.com/ngkhiem97/cv-face-mask-detection/main/images/1_Handshaking_Handshaking_1_113_764_124_820_236.jpg)
 
 ## Training
-To train the model, run the **train.py** file as below:
+Training files has the format: "train_{model}.py". Where model:
+  - pretrained: Fine-tuning a pretrained AlexNet model
+  - alexnet: training a AlexNet model
+  - resnet: training a ResNet model
+  - mobile: training a MobileNetV2 model
+
+To run the training, execute:
 ```
-python3 train.py
+python3 [training file]
 ```
+
+## Training on Google Colab
+Export the train_gg_colab.ipynb to Google Colab to start training on Google Colab 
 
 ## Execution
 **face_mask_detect.py**: to run the Face Mask Dectection module.
