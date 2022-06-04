@@ -5,6 +5,15 @@
 - Tien Nguyen: MS Data Science at Drexel University
 - Khiem Nguyen: MS Data Science at Drexel University
 
+## Install packages
+```
+pip install -r requirements.txt
+```
+or 
+```
+pip3 install -r requirements.txt
+```
+
 ## Dataset
 Download the dataset at https://drive.google.com/file/d/1QspxOJMDf_rAWVV7AU_Nc0rjo1_EPEDW/view 
 
