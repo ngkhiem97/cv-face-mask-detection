@@ -10,8 +10,7 @@ import matplotlib.pyplot as plt
 
 def main():
     directory = os.path.dirname(__file__)
-    #capture = cv2.VideoCapture(os.path.join(directory, "image.jpg")) # For a single image
-    capture = cv2.VideoCapture(0) # For webcam
+    capture = cv2.VideoCapture(0)
     if not capture.isOpened():
         exit()
     
