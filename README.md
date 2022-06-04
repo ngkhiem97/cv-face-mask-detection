@@ -49,4 +49,7 @@ python3 [training file]
 Export the train_gg_colab.ipynb to Google Colab to start training on Google Colab 
 
 ## Execution
-**face_mask_detect.py**: to run the Face Mask Dectection module.
+**face_mask_detect.py**: to run the Face Mask Dectection module. Command:
+```
+python3 face_mask_detect.py
+```
