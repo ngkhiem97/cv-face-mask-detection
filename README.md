@@ -25,7 +25,7 @@ python3 processing.py
 This processing step will extract facial features from the dataset. See example below:
 
 ### *Before processing*
-![Before extracting](https://raw.githubusercontent.com/ngkhiem97/cv-face-mask-detection/main/images/1_Handshaking_Handshaking_1_113.jpg)
+![Before extracting](https://raw.githubusercontent.com/ngkhiem97/cv-face-mask-detection/main/images/handshaking.jpg)
 
 ### *After processing*
 ![After extracting](https://raw.githubusercontent.com/ngkhiem97/cv-face-mask-detection/main/images/1_Handshaking_Handshaking_1_113_148_158_202_276.jpg)
