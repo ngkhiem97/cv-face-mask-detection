@@ -4,22 +4,22 @@ class ConvBatchNormReLU(nn.Sequential):
     """
     Combination of Conv2d, BatchNorm2d and ReLU6.
     """
-    def __init__(self, in_channel, out_channel, kernel_size=3, stride=1, groups=1):
+    def __init__(self, input_channel, out_channel, kernel_size=3, stride=1, groups=1):
         padding = (kernel_size - 1) // 2
         super(ConvBatchNormReLU, self).__init__(
-            nn.Conv2d(in_channel, out_channel, kernel_size, stride, padding, groups=groups, bias=False),
+            nn.Conv2d(input_channel, out_channel, kernel_size, stride, padding, groups=groups, bias=False),
             nn.BatchNorm2d(out_channel),
             nn.ReLU6(inplace=True)
         )
 
 class InvertedResidual(nn.Module):
-    def __init__(self, in_channel, out_channel, stride, expand_ratio):
+    def __init__(self, input_channel, out_channel, stride, expand_ratio):
         super(InvertedResidual, self).__init__()
-        hidden_channel = in_channel * expand_ratio
-        self.shortcut = stride == 1 and in_channel == out_channel
+        self.shortcut = stride == 1 and input_channel == out_channel
+        hidden_channel = input_channel * expand_ratio
         layers = []
         if expand_ratio != 1:
-            layers.append(ConvBatchNormReLU(in_channel, hidden_channel, kernel_size=1)) # 1x1 pointwise conv / exand
+            layers.append(ConvBatchNormReLU(input_channel, hidden_channel, kernel_size=1)) # 1x1 pointwise conv / exand
         layers.append(ConvBatchNormReLU(hidden_channel, hidden_channel, stride=stride, groups=hidden_channel)) # 3x3 depthwise conv
         layers.append(nn.Conv2d(hidden_channel, out_channel, kernel_size=1, bias=False)) # 1x1 pointwise conv(linear)
         layers.append(nn.BatchNorm2d(out_channel))
